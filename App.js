@@ -3,13 +3,13 @@
  */
 
 import React, {Component} from 'react';
-import {Text, Button, AsyncStorage, StyleSheet, ScrollView} from 'react-native';
-import {ListItem, Icon} from 'react-native-elements';
+import {Button, AsyncStorage, StyleSheet, ScrollView} from 'react-native';
+import {ListItem, Icon, Header} from 'react-native-elements';
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import Amplify from '@aws-amplify/core';
 import {DataStore, Predicates} from '@aws-amplify/datastore';
-import {Post, PostStatus, Comment, Quote} from './src/models';
+import {Post, PostStatus, Comment, Quote, QuoteStatus} from './src/models';
 
 import awsConfig from './aws-exports';
 Amplify.configure(awsConfig);
@@ -60,6 +60,7 @@ class App extends Component {
       new Quote({
         quoteNumber: Math.floor(Math.random() * 10),
         quoteName: `Quote Name ${Date.now()}`,
+        status: QuoteStatus.DRAFT,
         expirationDate: `${Date.now()}`,
         customerPoNumber: `PO-${Math.random()}-${Date.now()}`,
         description: `Quote Description - ${Date.now()}`,
@@ -124,11 +125,23 @@ class App extends Component {
     return (
       // <View>
       <ScrollView
-        style={{paddingTop: 40, flex: 1}}
+        style={{flex: 1}}
         contentContainerStyle={{alignItems: 'center'}}>
-        <Button title="Add Quote" onPress={this.onCreateQuote} />
+        <Header
+          centerComponent={{
+            text: 'Quotes',
+            style: {color: '#fff', fontSize: 24, paddingBottom: 10},
+          }}
+          rightComponent={{
+            icon: 'add',
+            color: '#fff',
+            onPress: this.onCreateQuote,
+          }}
+          containerStyle={{height: 64}}
+        />
+        {/* <Button title="Add Quote" onPress={this.onCreateQuote} />
         <Button title="Query Quotes" onPress={this.onQuotesQuery} />
-        <Button title="Delete All Quotes" onPress={this.onQuotesDelete} />
+        <Button title="Delete All Quotes" onPress={this.onQuotesDelete} /> */}
         {/*
         <Text style={styles.text} onPress={this.onQuotesQuery}>
           Query Quotes
@@ -158,7 +171,9 @@ class App extends Component {
         {this.state.quotes.map((quote, i) => (
           <ListItem
             key={i}
-            leftIcon={<Icon name="drafts" type="material" color="#f50" />}
+            leftIcon={
+              <Icon name="drafts" type="material" size={30} color="#f50" />
+            }
             title={quote.quoteName}
             subtitle={quote.description}
             containerStyle={{width: '100%'}}

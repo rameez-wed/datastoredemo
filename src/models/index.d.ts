@@ -5,6 +5,12 @@ export enum PostStatus {
   INACTIVE = "INACTIVE"
 }
 
+export enum QuoteStatus {
+  DRAFT = "DRAFT",
+  FINALIZED = "FINALIZED",
+  CUSTOMERREVIEWED = "CUSTOMERREVIEWED"
+}
+
 export declare class Post {
   readonly id: string;
   readonly title: string;
@@ -27,6 +33,7 @@ export declare class Quote {
   readonly id: string;
   readonly quoteNumber?: number;
   readonly quoteName?: string;
+  readonly status?: QuoteStatus | keyof typeof QuoteStatus;
   readonly expirationDate?: string;
   readonly customerPoNumber?: string;
   readonly description?: string;

@@ -128,6 +128,15 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "status": {
+                    "name": "status",
+                    "isArray": false,
+                    "type": {
+                        "enum": "QuoteStatus"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "expirationDate": {
                     "name": "expirationDate",
                     "isArray": false,
@@ -159,7 +168,15 @@ export const schema = {
                 "ACTIVE",
                 "INACTIVE"
             ]
+        },
+        "QuoteStatus": {
+            "name": "QuoteStatus",
+            "values": [
+                "DRAFT",
+                "FINALIZED",
+                "CUSTOMERREVIEWED"
+            ]
         }
     },
-    "version": "7e7125582ad10249fe6e1dad9e4f3b95"
+    "version": "3bf2afa9b9483983af2befb9352b6f8b"
 };

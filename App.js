@@ -3,11 +3,13 @@
  */
 
 import React, {Component} from 'react';
-import {Text, AsyncStorage, StyleSheet, ScrollView} from 'react-native';
+import {Text, Button, AsyncStorage, StyleSheet, ScrollView} from 'react-native';
+import {ListItem, Icon} from 'react-native-elements';
+
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import Amplify from '@aws-amplify/core';
 import {DataStore, Predicates} from '@aws-amplify/datastore';
-import {Post, PostStatus, Comment} from './src/models';
+import {Post, PostStatus, Comment, Quote} from './src/models';
 
 import awsConfig from './aws-exports';
 Amplify.configure(awsConfig);
@@ -18,14 +20,20 @@ class App extends Component {
     super(props);
     this.state = {
       posts: [],
+      quotes: [],
     };
   }
 
   componentDidMount() {
     this.onQuery();
-    subscription = DataStore.observe(Post).subscribe(msg => {
+    this.onQuotesQuery();
+    // subscription = DataStore.observe(Post).subscribe(msg => {
+    //   console.log('SUBSCRIPTION_UPDATE', msg);
+    //   this.onQuery();
+    // });
+    subscription = DataStore.observe(Quote).subscribe(msg => {
       console.log('SUBSCRIPTION_UPDATE', msg);
-      this.onQuery();
+      this.onQuotesQuery();
     });
   }
 
@@ -46,6 +54,24 @@ class App extends Component {
       }),
     );
   }
+
+  onCreateQuote() {
+    DataStore.save(
+      new Quote({
+        quoteNumber: Math.floor(Math.random() * 10),
+        quoteName: `Quote Name ${Date.now()}`,
+        expirationDate: `${Date.now()}`,
+        customerPoNumber: `PO-${Math.random()}-${Date.now()}`,
+        description: `Quote Description - ${Date.now()}`,
+      }),
+    );
+  }
+
+  onQuotesQuery = async () => {
+    const quotes = await DataStore.query(Quote);
+    console.log('QUERY_QUOTES_RESULT', quotes);
+    this.setState({quotes});
+  };
 
   async onCreatePostAndComments() {
     const post = new Post({
@@ -79,6 +105,11 @@ class App extends Component {
     console.log('DELETE_RESULT', deletedPosts);
   };
 
+  onQuotesDelete = async () => {
+    const deletedQuotes = await DataStore.delete(Quote, Predicates.ALL);
+    console.log('DELETE_RESULT', deletedQuotes);
+  };
+
   getAsyncStorage = async () => {
     const allKeys = await AsyncStorage.getAllKeys();
     const allDataStoreKeys = allKeys.filter(key =>
@@ -91,28 +122,51 @@ class App extends Component {
 
   render() {
     return (
+      // <View>
       <ScrollView
         style={{paddingTop: 40, flex: 1}}
         contentContainerStyle={{alignItems: 'center'}}>
-        <Text style={styles.text} onPress={this.getAsyncStorage}>
+        <Button title="Add Quote" onPress={this.onCreateQuote} />
+        <Button title="Query Quotes" onPress={this.onQuotesQuery} />
+        <Button title="Delete All Quotes" onPress={this.onQuotesDelete} />
+        {/*
+        <Text style={styles.text} onPress={this.onQuotesQuery}>
+          Query Quotes
+        </Text>
+        <Text style={styles.text} onPress={this.onQuotesDelete}>
+          Delete Quotes
+        </Text> */}
+        {/* <Text style={styles.text} onPress={this.getAsyncStorage}>
           Get Store
         </Text>
         <Text style={styles.text} onPress={this.onCreatePost}>
           Create One Post
-        </Text>
-        <Text style={styles.text} onPress={this.onCreatePostAndComments}>
+        </Text> */}
+        {/* <Text style={styles.text} onPress={this.onCreatePostAndComments}>
           Create Post & Comments
-        </Text>
-        <Text style={styles.text} onPress={this.onQuery}>
+        </Text> */}
+        {/* <Text style={styles.text} onPress={this.onQuery}>
           Query Posts
         </Text>
         <Text style={styles.text} onPress={this.onDelete}>
           Delete Posts
-        </Text>
-        {this.state.posts.map((post, i) => (
-          <Text key={i}>{`${post.title} ${post.rating}`}</Text>
+        </Text> */}
+
+        {/* {this.state.quotes.map((quote, i) => (
+          <Text key={i}>{`${quote.quoteName} ${quote.description}`}</Text>
+        ))} */}
+        {this.state.quotes.map((quote, i) => (
+          <ListItem
+            key={i}
+            leftIcon={<Icon name="drafts" type="material" color="#f50" />}
+            title={quote.quoteName}
+            subtitle={quote.description}
+            containerStyle={{width: '100%'}}
+            bottomDivider
+          />
         ))}
       </ScrollView>
+      // </View>
     );
   }
 }
@@ -123,6 +177,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  addButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
   text: {
     fontSize: 20,

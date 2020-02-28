@@ -1,0 +1,27 @@
+enum PostStatus {
+  ACTIVE
+  INACTIVE
+}
+
+type Post @model {
+  id: ID!
+  title: String!
+  comments: [Comment] @connection(name: "PostComments")
+  rating: Int!
+  status: PostStatus!
+}
+
+type Comment @model {
+  id: ID!
+  content: String
+  post: Post @connection(name: "PostComments")
+}
+
+type Quote @model {
+  id: ID!
+  quoteNumber: Int
+  quoteName: String
+  expirationDate: String
+  customerPoNumber: String
+  description: String
+}

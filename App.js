@@ -10,6 +10,7 @@ global.Buffer = global.Buffer || require('buffer').Buffer;
 import Amplify from '@aws-amplify/core';
 import {DataStore, Predicates} from '@aws-amplify/datastore';
 import {Post, PostStatus, Comment, Quote, QuoteStatus} from './src/models';
+import {NavigationContainer} from '@react-navigation/native';
 
 import awsConfig from './aws-exports';
 Amplify.configure(awsConfig);
@@ -124,63 +125,65 @@ class App extends Component {
   render() {
     return (
       // <View>
-      <ScrollView
-        style={{flex: 1}}
-        contentContainerStyle={{alignItems: 'center'}}>
-        <Header
-          centerComponent={{
-            text: 'Quotes',
-            style: {color: '#fff', fontSize: 24, paddingBottom: 10},
-          }}
-          rightComponent={{
-            icon: 'add',
-            color: '#fff',
-            onPress: this.onCreateQuote,
-          }}
-          containerStyle={{height: 64}}
-        />
-        {/* <Button title="Add Quote" onPress={this.onCreateQuote} />
+      <NavigationContainer>
+        <ScrollView
+          style={{flex: 1}}
+          contentContainerStyle={{alignItems: 'center'}}>
+          <Header
+            centerComponent={{
+              text: 'Quotes',
+              style: {color: '#fff', fontSize: 24, paddingBottom: 10},
+            }}
+            rightComponent={{
+              icon: 'add',
+              color: '#fff',
+              onPress: this.onCreateQuote,
+            }}
+            containerStyle={{height: 64}}
+          />
+          {/* <Button title="Add Quote" onPress={this.onCreateQuote} />
         <Button title="Query Quotes" onPress={this.onQuotesQuery} />
         <Button title="Delete All Quotes" onPress={this.onQuotesDelete} /> */}
-        {/*
+          {/*
         <Text style={styles.text} onPress={this.onQuotesQuery}>
           Query Quotes
         </Text>
         <Text style={styles.text} onPress={this.onQuotesDelete}>
           Delete Quotes
         </Text> */}
-        {/* <Text style={styles.text} onPress={this.getAsyncStorage}>
+          {/* <Text style={styles.text} onPress={this.getAsyncStorage}>
           Get Store
         </Text>
         <Text style={styles.text} onPress={this.onCreatePost}>
           Create One Post
         </Text> */}
-        {/* <Text style={styles.text} onPress={this.onCreatePostAndComments}>
+          {/* <Text style={styles.text} onPress={this.onCreatePostAndComments}>
           Create Post & Comments
         </Text> */}
-        {/* <Text style={styles.text} onPress={this.onQuery}>
+          {/* <Text style={styles.text} onPress={this.onQuery}>
           Query Posts
         </Text>
         <Text style={styles.text} onPress={this.onDelete}>
           Delete Posts
         </Text> */}
 
-        {/* {this.state.quotes.map((quote, i) => (
+          {/* {this.state.quotes.map((quote, i) => (
           <Text key={i}>{`${quote.quoteName} ${quote.description}`}</Text>
         ))} */}
-        {this.state.quotes.map((quote, i) => (
-          <ListItem
-            key={i}
-            leftIcon={
-              <Icon name="drafts" type="material" size={30} color="#f50" />
-            }
-            title={quote.quoteName}
-            subtitle={quote.description}
-            containerStyle={{width: '100%'}}
-            bottomDivider
-          />
-        ))}
-      </ScrollView>
+          {this.state.quotes.map((quote, i) => (
+            <ListItem
+              key={i}
+              leftIcon={
+                <Icon name="drafts" type="material" size={30} color="#f50" />
+              }
+              title={quote.quoteName}
+              subtitle={quote.description}
+              containerStyle={{width: '100%'}}
+              bottomDivider
+            />
+          ))}
+        </ScrollView>
+      </NavigationContainer>
       // </View>
     );
   }

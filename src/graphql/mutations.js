@@ -172,6 +172,7 @@ export const createQuote = /* GraphQL */ `
       id
       quoteNumber
       quoteName
+      status
       expirationDate
       customerPoNumber
       description
@@ -190,6 +191,7 @@ export const updateQuote = /* GraphQL */ `
       id
       quoteNumber
       quoteName
+      status
       expirationDate
       customerPoNumber
       description
@@ -208,6 +210,7 @@ export const deleteQuote = /* GraphQL */ `
       id
       quoteNumber
       quoteName
+      status
       expirationDate
       customerPoNumber
       description

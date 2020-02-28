@@ -3,6 +3,12 @@ enum PostStatus {
   INACTIVE
 }
 
+enum QuoteStatus {
+  DRAFT
+  FINALIZED
+  CUSTOMERREVIEWED
+}
+
 type Post @model {
   id: ID!
   title: String!
@@ -21,6 +27,7 @@ type Quote @model {
   id: ID!
   quoteNumber: Int
   quoteName: String
+  status: QuoteStatus
   expirationDate: String
   customerPoNumber: String
   description: String

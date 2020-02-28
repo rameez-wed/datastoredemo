@@ -184,6 +184,7 @@ export const syncQuotes = /* GraphQL */ `
         id
         quoteNumber
         quoteName
+        status
         expirationDate
         customerPoNumber
         description
@@ -202,6 +203,7 @@ export const getQuote = /* GraphQL */ `
       id
       quoteNumber
       quoteName
+      status
       expirationDate
       customerPoNumber
       description
@@ -222,6 +224,7 @@ export const listQuotes = /* GraphQL */ `
         id
         quoteNumber
         quoteName
+        status
         expirationDate
         customerPoNumber
         description

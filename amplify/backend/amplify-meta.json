@@ -35,8 +35,8 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/amplify-datastoredemo-dev-145202-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apiamplifyDatasource"
 			},
-			"lastPushTimeStamp": "2020-02-28T09:31:24.788Z",
-			"lastPushDirHash": "WARbIhChfdPLc6Cj2ZhWXm+BAlo="
+			"lastPushTimeStamp": "2020-02-28T10:55:02.763Z",
+			"lastPushDirHash": "9OB/u6eC//87WavqymoFySG2zsU="
 		}
 	}
 }

@@ -61,6 +61,14 @@ function QuotesList(props) {
               color="#283593"
             />
           }
+          rightIcon={
+            <Icon
+              name="delete"
+              type="material"
+              color="#424242"
+              onPress={() => props.onDeleteQuote(quote.id)}
+            />
+          }
           title={quote.quoteName}
           subtitle={quote.description}
           containerStyle={{width: '100%'}}
@@ -183,6 +191,11 @@ class App extends Component {
     );
   }
 
+  onDeleteQuote = async id => {
+    const deletedQuote = await DataStore.delete(Quote, id);
+    console.log('DELETE_QUOTE', deletedQuote);
+  };
+
   onQuotesQuery = async () => {
     const quotes = await DataStore.query(Quote);
     console.log('QUERY_QUOTES_RESULT', quotes);
@@ -249,7 +262,7 @@ class App extends Component {
             {props => (
               <QuotesList
                 {...props}
-                onCreateQuote={this.onCreateQuote}
+                onDeleteQuote={this.onDeleteQuote}
                 quotes={this.state.quotes}
               />
             )}

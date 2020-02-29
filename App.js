@@ -97,8 +97,8 @@ function AddQuote(props) {
     <View>
       <Input
         label={'Quote Number'}
-        value={`${quote.quoteNumber}`}
-        onChangeText={text => setQuote({...quote, quoteNumber: Number(text)})}
+        value={quote.quoteNumber ? `${quote.quoteNumber}` : ''}
+        onChangeText={text => setQuote({...quote, quoteNumber: text})}
       />
       <Input
         label="Quote Name"

@@ -19,6 +19,7 @@ import {DataStore, Predicates} from '@aws-amplify/datastore';
 import {Post, PostStatus, Comment, Quote, QuoteStatus} from './src/models';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import get from 'lodash/get';
 
 import awsConfig from './aws-exports';
 Amplify.configure(awsConfig);
@@ -62,12 +63,23 @@ function QuotesList(props) {
             />
           }
           rightIcon={
-            <Icon
-              name="delete"
-              type="material"
-              color="#424242"
-              onPress={() => props.onDeleteQuote(quote.id)}
-            />
+            <>
+              <Icon
+                name="edit"
+                type="material"
+                color="#424242"
+                onPress={() =>
+                  props.navigation.navigate('AddQuote', {quote: quote})
+                }
+                iconStyle={{paddingRight: 15}}
+              />
+              <Icon
+                name="delete"
+                type="material"
+                color="#424242"
+                onPress={() => props.onDeleteQuote(quote.id)}
+              />
+            </>
           }
           title={quote.quoteName}
           subtitle={quote.description}
@@ -80,15 +92,13 @@ function QuotesList(props) {
 }
 
 function AddQuote(props) {
-  const [quote, setQuote] = useState({});
+  const [quote, setQuote] = useState(get(props, 'route.params.quote', {}));
   return (
     <View>
       <Input
-        label="Quote Number"
-        value={quote.quoteNumber}
-        onChangeText={text => {
-          setQuote({...quote, quoteNumber: text});
-        }}
+        label={'Quote Number'}
+        value={`${quote.quoteNumber}`}
+        onChangeText={text => setQuote({...quote, quoteNumber: Number(text)})}
       />
       <Input
         label="Quote Name"
@@ -125,13 +135,20 @@ function AddQuote(props) {
         checked={quote.status === 'CUSTOMERREVIEWED'}
         onPress={() => setQuote({...quote, status: 'CUSTOMERREVIEWED'})}
       />
-      <Button
-        title="Save"
-        onPress={() => {
-          props.onCreateQuote(quote);
-          props.navigation.navigate('QuotesList');
-        }}
-      />
+      <View style={{alignItems: 'center', marginTop: 20}}>
+        <Button
+          title="Save"
+          containerStyle={{width: 100}}
+          onPress={() => {
+            if (get(props, 'route.params.quote', null)) {
+              props.onEditQuote(quote);
+            } else {
+              props.onCreateQuote(quote);
+            }
+            props.navigation.navigate('QuotesList');
+          }}
+        />
+      </View>
     </View>
   );
 }
@@ -187,6 +204,21 @@ class App extends Component {
         customerPoNumber:
           quote.customerPoNumber || `PO-${Math.random()}-${Date.now()}`,
         description: quote.description || `Quote Description - ${Date.now()}`,
+      }),
+    );
+  }
+
+  async onEditQuote(quote) {
+    const original = await DataStore.query(Quote, quote.id);
+
+    await DataStore.save(
+      Quote.copyOf(original, updated => {
+        updated.quoteNumber = quote.quoteNumber;
+        updated.quoteName = quote.quoteName;
+        updated.description = quote.description;
+        updated.expirationDate = quote.expirationDate;
+        updated.customerPoNumber = quote.customerPoNumber;
+        updated.status = quote.status;
       }),
     );
   }
@@ -269,7 +301,11 @@ class App extends Component {
           </Stack.Screen>
           <Stack.Screen name="AddQuote">
             {props => (
-              <AddQuote {...props} onCreateQuote={this.onCreateQuote} />
+              <AddQuote
+                {...props}
+                onEditQuote={this.onEditQuote}
+                onCreateQuote={this.onCreateQuote}
+              />
             )}
           </Stack.Screen>
         </Stack.Navigator>

@@ -2,19 +2,131 @@
  * React Native DataStore Sample App
  */
 
-import React, {Component} from 'react';
-import {Button, AsyncStorage, StyleSheet, ScrollView} from 'react-native';
-import {ListItem, Icon, Header} from 'react-native-elements';
+import React, {Component, useState} from 'react';
+import {AsyncStorage, StyleSheet, View, ScrollView} from 'react-native';
+import {
+  ListItem,
+  Icon,
+  Header,
+  Input,
+  CheckBox,
+  Button,
+} from 'react-native-elements';
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import Amplify from '@aws-amplify/core';
 import {DataStore, Predicates} from '@aws-amplify/datastore';
 import {Post, PostStatus, Comment, Quote, QuoteStatus} from './src/models';
 import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import awsConfig from './aws-exports';
 Amplify.configure(awsConfig);
 let subscription;
+
+function QuotesList(props) {
+  return (
+    <ScrollView
+      style={{flex: 1}}
+      contentContainerStyle={{alignItems: 'center'}}>
+      <Header
+        centerComponent={{
+          text: 'Quotes',
+          style: {color: '#fff', fontSize: 24, paddingBottom: 10},
+        }}
+        rightComponent={{
+          icon: 'add',
+          color: '#fff',
+          size: 35,
+          iconStyle: {paddingBottom: 10},
+          onPress: () => props.navigation.navigate('AddQuote'),
+        }}
+        containerStyle={{height: 64}}
+      />
+
+      {props.quotes.map((quote, i) => (
+        <ListItem
+          key={i}
+          leftIcon={
+            <Icon
+              name={
+                quote.status === QuoteStatus.DRAFT
+                  ? 'drafts'
+                  : quote.status === QuoteStatus.FINALIZED
+                  ? 'check'
+                  : 'person'
+              }
+              type="material"
+              size={30}
+              color="#283593"
+            />
+          }
+          title={quote.quoteName}
+          subtitle={quote.description}
+          containerStyle={{width: '100%'}}
+          bottomDivider
+        />
+      ))}
+    </ScrollView>
+  );
+}
+
+function AddQuote(props) {
+  const [quote, setQuote] = useState({});
+  return (
+    <View>
+      <Input
+        label="Quote Number"
+        value={quote.quoteNumber}
+        onChangeText={text => {
+          setQuote({...quote, quoteNumber: text});
+        }}
+      />
+      <Input
+        label="Quote Name"
+        value={quote.quoteName}
+        onChangeText={text => setQuote({...quote, quoteName: text})}
+      />
+      <Input
+        label="Description"
+        value={quote.description}
+        onChangeText={text => setQuote({...quote, description: text})}
+      />
+      <Input
+        label="Expiration Date"
+        value={quote.expirationDate}
+        onChangeText={text => setQuote({...quote, expirationDate: text})}
+      />
+      <Input
+        label="Customer PO Number"
+        value={quote.customerPoNumber}
+        onChangeText={text => setQuote({...quote, customerPoNumber: text})}
+      />
+      <CheckBox
+        title="Draft"
+        checked={quote.status === 'DRAFT'}
+        onPress={() => setQuote({...quote, status: 'DRAFT'})}
+      />
+      <CheckBox
+        title="Finalized"
+        checked={quote.status === 'FINALIZED'}
+        onPress={() => setQuote({...quote, status: 'FINALIZED'})}
+      />
+      <CheckBox
+        title="Customer Reviewed"
+        checked={quote.status === 'CUSTOMERREVIEWED'}
+        onPress={() => setQuote({...quote, status: 'CUSTOMERREVIEWED'})}
+      />
+      <Button
+        title="Save"
+        onPress={() => {
+          props.onCreateQuote(quote);
+          props.navigation.navigate('QuotesList');
+        }}
+      />
+    </View>
+  );
+}
 
 class App extends Component {
   constructor(props) {
@@ -56,15 +168,17 @@ class App extends Component {
     );
   }
 
-  onCreateQuote() {
+  onCreateQuote(quote = {}) {
     DataStore.save(
       new Quote({
-        quoteNumber: Math.floor(Math.random() * 10),
-        quoteName: `Quote Name ${Date.now()}`,
-        status: QuoteStatus.DRAFT,
-        expirationDate: `${Date.now()}`,
-        customerPoNumber: `PO-${Math.random()}-${Date.now()}`,
-        description: `Quote Description - ${Date.now()}`,
+        quoteNumber:
+          Number(quote.quoteNumber) || Math.floor(Math.random() * 10),
+        quoteName: quote.quoteName || `Quote Name ${Date.now()}`,
+        status: quote.status || QuoteStatus.DRAFT,
+        expirationDate: quote.expirationDate || `${Date.now()}`,
+        customerPoNumber:
+          quote.customerPoNumber || `PO-${Math.random()}-${Date.now()}`,
+        description: quote.description || `Quote Description - ${Date.now()}`,
       }),
     );
   }
@@ -123,68 +237,30 @@ class App extends Component {
   };
 
   render() {
-    return (
-      // <View>
-      <NavigationContainer>
-        <ScrollView
-          style={{flex: 1}}
-          contentContainerStyle={{alignItems: 'center'}}>
-          <Header
-            centerComponent={{
-              text: 'Quotes',
-              style: {color: '#fff', fontSize: 24, paddingBottom: 10},
-            }}
-            rightComponent={{
-              icon: 'add',
-              color: '#fff',
-              onPress: this.onCreateQuote,
-            }}
-            containerStyle={{height: 64}}
-          />
-          {/* <Button title="Add Quote" onPress={this.onCreateQuote} />
-        <Button title="Query Quotes" onPress={this.onQuotesQuery} />
-        <Button title="Delete All Quotes" onPress={this.onQuotesDelete} /> */}
-          {/*
-        <Text style={styles.text} onPress={this.onQuotesQuery}>
-          Query Quotes
-        </Text>
-        <Text style={styles.text} onPress={this.onQuotesDelete}>
-          Delete Quotes
-        </Text> */}
-          {/* <Text style={styles.text} onPress={this.getAsyncStorage}>
-          Get Store
-        </Text>
-        <Text style={styles.text} onPress={this.onCreatePost}>
-          Create One Post
-        </Text> */}
-          {/* <Text style={styles.text} onPress={this.onCreatePostAndComments}>
-          Create Post & Comments
-        </Text> */}
-          {/* <Text style={styles.text} onPress={this.onQuery}>
-          Query Posts
-        </Text>
-        <Text style={styles.text} onPress={this.onDelete}>
-          Delete Posts
-        </Text> */}
+    const Stack = createStackNavigator();
 
-          {/* {this.state.quotes.map((quote, i) => (
-          <Text key={i}>{`${quote.quoteName} ${quote.description}`}</Text>
-        ))} */}
-          {this.state.quotes.map((quote, i) => (
-            <ListItem
-              key={i}
-              leftIcon={
-                <Icon name="drafts" type="material" size={30} color="#f50" />
-              }
-              title={quote.quoteName}
-              subtitle={quote.description}
-              containerStyle={{width: '100%'}}
-              bottomDivider
-            />
-          ))}
-        </ScrollView>
+    return (
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Screen name="QuotesList">
+            {props => (
+              <QuotesList
+                {...props}
+                onCreateQuote={this.onCreateQuote}
+                quotes={this.state.quotes}
+              />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="AddQuote">
+            {props => (
+              <AddQuote {...props} onCreateQuote={this.onCreateQuote} />
+            )}
+          </Stack.Screen>
+        </Stack.Navigator>
       </NavigationContainer>
-      // </View>
     );
   }
 }

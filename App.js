@@ -3,7 +3,13 @@
  */
 
 import React, {Component, useState} from 'react';
-import {AsyncStorage, StyleSheet, View, ScrollView} from 'react-native';
+import {
+  AsyncStorage,
+  StyleSheet,
+  View,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import {
   ListItem,
   Icon,
@@ -45,48 +51,54 @@ function QuotesList(props) {
         containerStyle={{height: 64}}
       />
 
-      {props.quotes.map((quote, i) => (
-        <ListItem
-          key={i}
-          leftIcon={
-            <Icon
-              name={
-                quote.status === QuoteStatus.DRAFT
-                  ? 'drafts'
-                  : quote.status === QuoteStatus.FINALIZED
-                  ? 'check'
-                  : 'person'
-              }
-              type="material"
-              size={30}
-              color="#283593"
-            />
-          }
-          rightIcon={
-            <>
+      {props.quotes.length > 0 ? (
+        props.quotes.map((quote, i) => (
+          <ListItem
+            key={i}
+            leftIcon={
               <Icon
-                name="edit"
-                type="material"
-                color="#424242"
-                onPress={() =>
-                  props.navigation.navigate('AddQuote', {quote: quote})
+                name={
+                  quote.status === QuoteStatus.DRAFT
+                    ? 'drafts'
+                    : quote.status === QuoteStatus.FINALIZED
+                    ? 'check'
+                    : 'person'
                 }
-                iconStyle={{paddingRight: 15}}
-              />
-              <Icon
-                name="delete"
                 type="material"
-                color="#424242"
-                onPress={() => props.onDeleteQuote(quote.id)}
+                size={30}
+                color="#283593"
               />
-            </>
-          }
-          title={quote.quoteName}
-          subtitle={quote.description}
-          containerStyle={{width: '100%'}}
-          bottomDivider
-        />
-      ))}
+            }
+            rightIcon={
+              <>
+                <Icon
+                  name="edit"
+                  type="material"
+                  color="#424242"
+                  onPress={() =>
+                    props.navigation.navigate('AddQuote', {quote: quote})
+                  }
+                  iconStyle={{paddingRight: 15}}
+                />
+                <Icon
+                  name="delete"
+                  type="material"
+                  color="#424242"
+                  onPress={() => props.onDeleteQuote(quote.id)}
+                />
+              </>
+            }
+            title={quote.quoteName}
+            subtitle={quote.description}
+            containerStyle={{width: '100%'}}
+            bottomDivider
+          />
+        ))
+      ) : (
+        <View style={{marginTop: 50}}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -231,6 +243,12 @@ class App extends Component {
   onQuotesQuery = async () => {
     const quotes = await DataStore.query(Quote);
     console.log('QUERY_QUOTES_RESULT', quotes);
+    // setTimeout(() => {
+    //   this.setState({
+    //     loading: false,
+    //     quotes: quotes,
+    //   });
+    // }, 2500);
     this.setState({quotes});
   };
 

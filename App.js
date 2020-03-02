@@ -17,7 +17,10 @@ import {
   Input,
   CheckBox,
   Button,
+  Text,
+  Divider,
 } from 'react-native-elements';
+import DatePicker from 'react-native-date-picker';
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import Amplify from '@aws-amplify/core';
@@ -104,7 +107,11 @@ function QuotesList(props) {
 }
 
 function AddQuote(props) {
-  const [quote, setQuote] = useState(get(props, 'route.params.quote', {}));
+  const [quote, setQuote] = useState(
+    get(props, 'route.params.quote', {
+      expirationDate: new Date(),
+    }),
+  );
   return (
     <View>
       <Input
@@ -122,11 +129,27 @@ function AddQuote(props) {
         value={quote.description}
         onChangeText={text => setQuote({...quote, description: text})}
       />
-      <Input
-        label="Expiration Date"
-        value={quote.expirationDate}
-        onChangeText={text => setQuote({...quote, expirationDate: text})}
-      />
+      <Text
+        style={{
+          marginLeft: 10,
+          fontWeight: 'bold',
+          fontSize: 16,
+          color: 'grey',
+          marginTop: 10,
+        }}>
+        Expiration Date
+      </Text>
+
+      <Divider />
+      <View style={{alignItems: 'center'}}>
+        <DatePicker
+          date={new Date(quote.expirationDate)}
+          onDateChange={date => setQuote({...quote, expirationDate: date})}
+          mode="date"
+        />
+      </View>
+      <Divider style={{marginBottom: 10}} />
+
       <Input
         label="Customer PO Number"
         value={quote.customerPoNumber}
@@ -212,7 +235,7 @@ class App extends Component {
           Number(quote.quoteNumber) || Math.floor(Math.random() * 10),
         quoteName: quote.quoteName || `Quote Name ${Date.now()}`,
         status: quote.status || QuoteStatus.DRAFT,
-        expirationDate: quote.expirationDate || `${Date.now()}`,
+        expirationDate: quote.expirationDate.toString() || `${Date.now()}`,
         customerPoNumber:
           quote.customerPoNumber || `PO-${Math.random()}-${Date.now()}`,
         description: quote.description || `Quote Description - ${Date.now()}`,
@@ -228,7 +251,7 @@ class App extends Component {
         updated.quoteNumber = quote.quoteNumber;
         updated.quoteName = quote.quoteName;
         updated.description = quote.description;
-        updated.expirationDate = quote.expirationDate;
+        updated.expirationDate = quote.expirationDate.toString();
         updated.customerPoNumber = quote.customerPoNumber;
         updated.status = quote.status;
       }),

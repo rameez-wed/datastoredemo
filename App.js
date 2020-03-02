@@ -121,7 +121,7 @@ function AddQuote(props) {
         label={'Quote Number'}
         value={quote.quoteNumber ? `${quote.quoteNumber}` : ''}
         onChangeText={text => setQuote({...quote, quoteNumber: text})}
-        keyboardType="numeric"
+        keyboardType="number-pad"
       />
       <Input
         label="Quote Name"
@@ -158,7 +158,7 @@ function AddQuote(props) {
         label="Customer PO Number"
         value={quote.customerPoNumber}
         onChangeText={text => setQuote({...quote, customerPoNumber: text})}
-        keyboardType="numeric"
+        keyboardType="number-pad"
       />
       <CheckBox
         title="Draft"
@@ -241,8 +241,7 @@ class App extends Component {
         quoteName: quote.quoteName || `Quote Name ${Date.now()}`,
         status: quote.status || QuoteStatus.DRAFT,
         expirationDate: quote.expirationDate.toString() || `${Date.now()}`,
-        customerPoNumber:
-          quote.customerPoNumber || `PO-${Math.random()}-${Date.now()}`,
+        customerPoNumber: quote.customerPoNumber || 0,
         description: quote.description || `Quote Description - ${Date.now()}`,
       }),
     );

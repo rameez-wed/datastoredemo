@@ -21,6 +21,7 @@ import {
   Divider,
 } from 'react-native-elements';
 import DatePicker from 'react-native-date-picker';
+import moment from 'moment';
 
 global.Buffer = global.Buffer || require('buffer').Buffer;
 import Amplify from '@aws-amplify/core';
@@ -109,7 +110,9 @@ function QuotesList(props) {
 function AddQuote(props) {
   const [quote, setQuote] = useState(
     get(props, 'route.params.quote', {
-      expirationDate: new Date(),
+      expirationDate: moment()
+        .seconds(0)
+        .milliseconds(0),
     }),
   );
   return (
@@ -118,6 +121,7 @@ function AddQuote(props) {
         label={'Quote Number'}
         value={quote.quoteNumber ? `${quote.quoteNumber}` : ''}
         onChangeText={text => setQuote({...quote, quoteNumber: text})}
+        keyboardType="numeric"
       />
       <Input
         label="Quote Name"
@@ -154,6 +158,7 @@ function AddQuote(props) {
         label="Customer PO Number"
         value={quote.customerPoNumber}
         onChangeText={text => setQuote({...quote, customerPoNumber: text})}
+        keyboardType="numeric"
       />
       <CheckBox
         title="Draft"

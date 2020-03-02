@@ -133,6 +133,13 @@ function AddQuote(props) {
         value={quote.description}
         onChangeText={text => setQuote({...quote, description: text})}
       />
+
+      <Input
+        label="Customer PO Number"
+        value={quote.customerPoNumber}
+        onChangeText={text => setQuote({...quote, customerPoNumber: text})}
+        keyboardType="number-pad"
+      />
       <Text
         style={{
           marginLeft: 10,
@@ -154,12 +161,6 @@ function AddQuote(props) {
       </View>
       <Divider style={{marginBottom: 10}} />
 
-      <Input
-        label="Customer PO Number"
-        value={quote.customerPoNumber}
-        onChangeText={text => setQuote({...quote, customerPoNumber: text})}
-        keyboardType="number-pad"
-      />
       <CheckBox
         title="Draft"
         checked={quote.status === 'DRAFT'}
